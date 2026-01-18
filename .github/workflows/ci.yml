@@ -1,0 +1,13 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  lint:
+    uses: ai-asset-architecture/aaa-actions/.github/workflows/lint.yml@v0.1.0
+  test:
+    uses: ai-asset-architecture/aaa-actions/.github/workflows/test.yml@v0.1.0
+  eval:
+    uses: ai-asset-architecture/aaa-actions/.github/workflows/eval.yml@v0.1.0
