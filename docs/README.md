@@ -1,3 +1,1 @@
-# Docs
-
-Project documentation lives in `<org>-docs`.
+# Service Docs Index\n\n- README.md | Docs\n
