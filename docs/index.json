@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-01-23T12:58:34Z",
+  "generated_at": "2026-01-24T05:43:54Z",
   "source_dir": "aaa-tpl-service/docs",
   "hash_algo": "sha256",
   "files": [
@@ -7,7 +7,7 @@
       "path": "README.md",
       "title": "Service Docs Index",
       "hash": "e404cd68c6c155a9a3143248c14538b79577ca9b3e9a97c59fdffae56588aa35",
-      "last_modified": "2026-01-23",
+      "last_modified": "2026-01-24",
       "metadata": {}
     }
   ]
