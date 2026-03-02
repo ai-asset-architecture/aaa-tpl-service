@@ -46,6 +46,78 @@ def test_parse_versions_and_workflows(tmp_path: Path):
 
     detail = get_version_detail(cfg, "v1.0.0")
     assert detail["item"]["name"] == "Demo"
+    assert detail["steps"]["step1"]["status"] in {"COMPLETED", "UNVERIFIED"}
+
+
+def test_version_detail_contains_step_views(tmp_path: Path):
+    version_index = tmp_path / "version_index.md"
+    workflow_index = tmp_path / "workflow_index.md"
+
+    _write_file(
+        version_index,
+        """# Version Index
+
+- updated_at_taipei: 2026-03-01T00:00:00+08:00
+
+| 日期 | 版本 | 名稱 | 意義 | 為何要做 | 版本落地處 | 狀態 | 可用性驗證 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 2026-03-01 | v2.0.1 | Guide Parity | 目的A | 原因A | governance | UNVERIFIED | run_ref=N/A (step2-pending); evidence=docs/plans/2026-03-01-v2.0.1-guide-parity-gate-plan.md,docs/audits/2026-03-01-v2.0.1-guide-parity-gate-audit.md,docs/reviews/2026-03-01-v2.0.1-guide-parity-gate-diff-paths.md,.github/workflows/v2-0-1-guide-parity-gate.yml,scripts/gates/verify_operate_maintain_guides.py; note=step1-ready-pending-approval |
+""",
+    )
+    _write_file(
+        workflow_index,
+        """# Workflow Index
+
+- updated_at_taipei: 2026-03-01T00:00:00+08:00
+
+| 日期 | ID | 工作流程 | 目的 | 目標 | 場合 | 觸發時機 | 模式 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 2026-03-01 | .github/workflows/v2-0-1-guide-parity-gate.yml | Guide Parity | P | T | S | pr | auto |
+""",
+    )
+
+    cfg = OpsSourceConfig(version_index_path=version_index, workflow_index_path=workflow_index)
+    detail = get_version_detail(cfg, "v2.0.1")
+
+    assert detail["availability"]["run_ref"] == "N/A (step2-pending)"
+    assert detail["steps"]["step1"]["status"] == "COMPLETED"
+    assert detail["steps"]["step1"]["artifact_count"] >= 4
+    assert detail["steps"]["step2"]["status"] == "UNVERIFIED"
+    assert detail["steps"]["step3"]["status"] == "N/A"
+    assert detail["steps"]["step4"]["status"] == "N/A"
+
+
+def test_version_detail_step2_has_run_url(tmp_path: Path):
+    version_index = tmp_path / "version_index.md"
+    workflow_index = tmp_path / "workflow_index.md"
+
+    _write_file(
+        version_index,
+        """# Version Index
+
+- updated_at_taipei: 2026-03-01T00:00:00+08:00
+
+| 日期 | 版本 | 名稱 | 意義 | 為何要做 | 版本落地處 | 狀態 | 可用性驗證 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 2026-03-01 | v9.9.9 | Demo | M | W | x | COMPLETED | run_ref=gh-actions:demo-org/demo-repo@.github/workflows/demo.yml#123456789; evidence=docs/plans/a.md,docs/evidence/r.json |
+""",
+    )
+    _write_file(
+        workflow_index,
+        """# Workflow Index
+
+- updated_at_taipei: 2026-03-01T00:00:00+08:00
+
+| 日期 | ID | 工作流程 | 目的 | 目標 | 場合 | 觸發時機 | 模式 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 2026-03-01 | .github/workflows/demo.yml | Demo WF | P | T | S | manual | manual |
+""",
+    )
+
+    cfg = OpsSourceConfig(version_index_path=version_index, workflow_index_path=workflow_index)
+    detail = get_version_detail(cfg, "v9.9.9")
+    assert detail["steps"]["step2"]["status"] == "COMPLETED"
+    assert detail["steps"]["step2"]["run_url"] == "https://github.com/demo-org/demo-repo/actions/runs/123456789"
 
 
 def test_capability_disabled_by_default(monkeypatch):

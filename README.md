@@ -26,8 +26,8 @@ This template includes a backend-first scaffold for the following API contracts:
 - `GET /api/ops/version/{version}`
 
 ### Canonical Data Sources
-- `aaa-tpl-docs/version_index.md`
-- `aaa-tpl-docs/workflow_index.md`
+- `aaa-tpl-docs/ops/index/version_index.md`
+- `aaa-tpl-docs/ops/index/workflow_index.md`
 
 ### Capability Gate
 - Capability name: `operate_maintain_workflow_v2`
